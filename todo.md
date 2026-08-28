@@ -127,6 +127,6 @@
 
 ## GitHub Synchronization
 
-- [ ] Verify the current project remote and sensitive-file exclusions before publishing source.
-- [ ] Commit the current SPCare full-stack implementation and push it to public `SpCare`.
-- [ ] Verify the public branch, latest commit, and repository contents after push.
+- [x] Verify the current project remote and sensitive-file exclusions before publishing source.
+- [x] Commit the current SPCare full-stack implementation and push it to public `SpCare`.
+- [x] Verify the public branch, latest commit, and repository contents after push.
