@@ -1,0 +1,1 @@
+ALTER TABLE `mediaAssets` ADD `filename` varchar(180) NOT NULL;

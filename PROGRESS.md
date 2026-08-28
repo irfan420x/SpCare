@@ -1,89 +1,53 @@
-# SpCare — Engineering Progress
 
-**Owner:** IRFAN  
-**Repository:** `irfan420x/SpCare`  
-**Purpose:** This file is the handoff ledger for every human or AI contributor. Update it after every meaningful task.
 
-## Current Status
-
-| Field | Value |
-|---|---|
-| Overall stage | Architecture and documentation foundation |
-| Current milestone | M0 — Decisions, contracts and operating rules |
-| Public repository | [github.com/irfan420x/SpCare](https://github.com/irfan420x/SpCare) |
-| Product implementation | Not started in this repository; existing UI is a separate prototype reference |
-| Active blocker | None |
-| Next owner | Next AI/developer session |
-
-## 2026-08-29 — Repository roadmap foundation
+## 2026-08-29 — Foundation gap remediation
 
 ### Completed
 
-The public GitHub repository was created with `ROADMAP.md`. The roadmap defines the public web, mobile app, FastAPI backend and separate `/admin` control plane. It includes content CRUD, media replacement, verification, moderation, RBAC, MFA, audit logs, API contracts, cache invalidation, CI/CD, testing and phased delivery.
+Added a real frontend admin gate around `/admin`: unauthenticated visitors are handled by the existing auth shell, non-admin users receive an access-denied state, and admin data hooks only mount inside the admin workspace. Converted featured carousel items, notice/post content, and a service-directory preview on the public homepage to use the centralized `spcare` API read model, with explicit loading, offline fallback and empty states. Added the Open-Meteo weather adapter to the same API layer and retained a safe server-side fallback.
+
+Added an admin-only `updateService` mutation plus an inline editor for service name, phone and image URL. Extended tests with direct `server/db.ts` helper coverage for seeded categories and joined service rows.
 
 ### Validation
 
-The repository is public, the default branch is `main`, `ROADMAP.md` is present in GitHub, and the first commit is `d41c758` (`docs: add production full-stack roadmap`).
-
-### Decisions
-
-The first production shape will be a modular monolith rather than premature microservices. Public and admin surfaces may share a Next.js codebase initially, but `/admin` must have a separate layout, middleware, permission guard and API boundary. The backend remains the authoritative security boundary.
+`pnpm check`, `pnpm build`, and `pnpm test` pass. The final test run reports 2 files and 7 passing tests. Final responsive screenshots were captured for `/` and `/admin` at 390px. The public screen showed API-backed categories, featured content, service directory rows, notice content and live weather response; the admin screen showed protected control-plane inventory and edit affordances.
 
 ### Known limitations / blockers
 
-No production application code, database schema, API implementation, authentication provider, object-storage bucket or deployment environment has been created in this repository yet.
+Binary media upload, asset validation/scanning, content revision history, notice/category CRUD, publish approvals, persistent audit events and Bengali-aware search indexing remain future CMS work. The current demo records are intentionally marked as demo and must be replaced or reviewed before production publication.
 
 ### Next task
 
-Approve and create the M0 artifacts: `docs/architecture/erd.md`, `docs/architecture/permissions.md`, `docs/api/openapi.yaml`, `docs/content-lifecycle.md`, `docs/media-policy.md` and the initial monorepo workspace skeleton.
+Implement the CMS milestone: media upload through S3 helpers, media metadata records, service/notice create-edit-publish transitions, audit log persistence, and full admin navigation for directory content.
 
-## 2026-08-29 — AI contributor contract
+
+## 2026-08-29 — Admin S3 media library
 
 ### Completed
 
-Created `CLAUDE.md` with product context, target architecture, `/admin` rules, media workflow, security baseline, frontend standards, API conventions, commit rules and the mandatory AI task execution protocol. The protocol requires every future agent to read this file plus `README.md`, `ROADMAP.md` and `PROGRESS.md` before coding, then update this file after meaningful work.
+Added an admin-only media library backed by the platform S3 storage helper. The backend now supports media listing, validated image upload, metadata creation, Bengali alt-text updates, and archive-by-reference. Upload keys are normalized under the authenticated admin namespace; accepted types are JPEG, PNG, WebP, GIF, and AVIF with a five-megabyte limit. Physical object deletion is intentionally not attempted because the storage contract exposes archival/unreferencing rather than destructive deletion.
+
+The `/admin` workspace now includes a media inventory card, upload picker with alt-text input, image previews, MIME/size labels, search filtering, inline metadata editing, archive control, loading/error/empty states, and media count in the overview. The centralized `spcareApi` layer exposes all media queries and mutations.
 
 ### Validation
 
-The document was written to the repository and cross-references the roadmap and progress ledger. It contains the required handoff template and a concrete next-task rule.
-
-### Decisions
-
-The project treats content trust, verification status, source attribution, revision history and auditability as product requirements rather than optional admin features. Fabricated reviews, ratings, testimonials or engagement are prohibited.
-
-### Known limitations / blockers
-
-The application repository structure described in the contract is a target structure; it has not yet been scaffolded in this public repository.
+`pnpm check`, `pnpm build`, and `pnpm test` pass. The expanded test suite reports 2 files and 10 passing tests, including regular-user authorization rejection, unsupported MIME rejection, and five-megabyte payload rejection. A responsive `/admin` screenshot was captured at 390px.
 
 ### Next task
 
-Begin M0 by drafting the domain ERD and permission matrix before generating application code.
+Connect selected media assets to service and featured-content editors, then implement media replacement history and publish-safe reference checks.
 
-## Progress Entry Template
 
-Copy this block after every meaningful task and update every field:
-
-```markdown
-## YYYY-MM-DD — Short task title
+## 2026-08-29 — Media library completion pass
 
 ### Completed
-- What changed, including exact files or user-visible behavior.
+
+Added the explicit `filename` field to `mediaAssets` and applied an additive migration with a safe default for existing records. The admin UI now exposes a reusable media picker: service editors can select an uploaded image instead of pasting a URL, and featured carousel editors can select and replace their image reference from the same library. The media library supports filename/alt-text filtering, previews, Bengali alt-text editing, archive-by-reference, and upload validation.
 
 ### Validation
-- Commands, tests, screenshots, API checks, or review evidence.
 
-### Decisions
-- Any new product, architecture, security, or data decision.
-
-### Known limitations / blockers
-- Honest unresolved items, or “None”.
+`pnpm check`, `pnpm build`, and `pnpm test` pass. The suite reports 2 files and 12 passing tests, including metadata update validation and deterministic S3 failure propagation. A final responsive `/admin` screenshot was captured at 390px and shows the featured media editor, service inventory, upload panel, and empty media state without layout errors.
 
 ### Next task
-- One specific actionable task for the next contributor.
-```
 
-## Handoff Rules
-
-The next contributor should begin with the current status table and the latest progress entry, then open the files named in **Next task**. Do not mark a task complete without validation evidence. If work is partially complete, record the exact partial state and leave the next task specific enough that another contributor can continue without reconstructing hidden context.
-
-**Maintainer:** IRFAN
+Add media reference history and publish-safe dependency checks before enabling destructive content replacement in production.
